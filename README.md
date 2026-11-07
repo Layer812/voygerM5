@@ -18,3 +18,8 @@ Spaceflight simulator for the M5Stack StopWatch (ESP32-S3). Explore planets, the
 **R16 FIX8:** warp animation frame-pacing recovery, arrival positioning, short 1.8-second exit glow, no destination markers or names in flight. Host tests PASS; Windows PlatformIO build and R16 FIX8 device test pending. R16 FIX4 displayed successfully on hardware.
 
 [日本語](README.ja.md) · [引継ぎメモ](HANDOFF.ja.md) · [License](LICENSE) · [Asset notices](THIRD_PARTY_NOTICES.md)
+
+## Source code / ソース
+
+- [Browse firmware source](firmware/src/main.cpp) / [ワープ表示タイミング](firmware/include/warp_timing.hpp)
+- [Download full R16 FIX8 source archive](source/SV_R16F8_WARP_FX_COM16.zip)
