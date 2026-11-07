@@ -15,6 +15,7 @@ In November 2026, a mysteriously Doppler-shifted transmission arrived from the d
 - Swipe lower outer rim: throttle (left reverse / 6 o’clock neutral / right forward).
 - Hold right button: main thrust.
 - Left button: warp destinations; swipe to choose, right button to warp.
+- Double-click left button: untargeted 1.125-light-year jump straight along the ship's heading (no course correction).
 - Long press center: toggle HUD.
 
 ## Hardware & installation
