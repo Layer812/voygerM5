@@ -1,4 +1,4 @@
-# STAR VOYAGER — M5Stack StopWatch
+# voygerM5 — M5Stack StopWatch
 
 M5Stack StopWatch用の宇宙航行シミュレータです。重力、姿勢制御スラスター、ワープで惑星・月・Voyager 1/2を訪れます。
 
