@@ -216,6 +216,7 @@ static void drawTutorialPage(){
 static void startFlight(){
  tutorialOpen=false;flightTitleStart=millis();
  leftTapPending=false;
+ (void)hardware_buttons::takeLeftDoublePress(); // discard tutorial button sequences
  prevUs=micros();lastDraw=0;touchLast=false;rightBlockedUntilRelease=true;
  // Commit the first flight pixels directly before the expensive planet/space
  // renderer runs.  A slow first full-screen sprite cannot leave a black LCD.
