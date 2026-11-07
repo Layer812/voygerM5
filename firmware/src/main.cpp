@@ -45,6 +45,10 @@ static uint32_t arrivalGlowMs=0, arrivalFocusUntil=0;
 static int navIndex=0; // 0=FREE, 1..9=planet/Moon, 10/11=Voyager 1/2
 static constexpr int NAV_COUNT=12;
 static bool warpMenu=false, hudVisible=true, rightBlockedUntilRelease=false;
+// Two accepted presses within 450ms start an untargeted 1.125 light-year jump.
+static bool leftTapPending=false;
+static uint32_t lastLeftTapMs=0;
+static constexpr double SHIP_MASS_KG=65000.;
 // StopWatch physical key A (yellow, GPIO2) and B (blue, GPIO1) are active LOW.
 // Poll raw GPIO in addition to the M5Unified abstraction: PlatformIO's generic
 // esp32s3box board identifier may otherwise leave button updates inactive.
@@ -94,16 +98,17 @@ static const char* navName(int n){if(n==0)return "FREE FLIGHT";if(n>=10)return a
 static void selectTarget(int n){navIndex=(n+NAV_COUNT)%NAV_COUNT;if(!navIndex)return;
  // Selecting a warp destination never changes ship attitude.
 }
-static void beginWarp(){
+static void beginWarp(bool longJump=false){
  if(warpActive()||sim.crashed)return;
  // Calculate a camera-ready arrival point, not just a coordinate jump.
  // Keep the destination's velocity so a planet/probe does not immediately
  // fly out of view after warp. Warp menu FREE FLIGHT keeps original motion.
- const auto a=warp_arrival::calculate(sim,navIndex);
- warpEnd=a.ship;
+ const auto a=warp_arrival::calculate(sim,longJump?0:navIndex);
+ // A long jump always follows the raw nose direction. No steering correction.
+ warpEnd=longJump ? sim.ship+sim.fwd()*astro::LONG_WARP_STEP : a.ship;
  warpArrivalVelocity=a.properVelocity;
  warpArrivalYaw=a.yaw;warpArrivalPitch=a.pitch;
- warpArrivalTarget=navIndex;
+ warpArrivalTarget=longJump?0:navIndex;
  warpApplied=false;arrivalGlowMs=0;arrivalFocusUntil=0;
  warpFrameClock.start();
  warpMs=millis();sim.thrust=false;sim.engine.clear();
@@ -197,7 +202,7 @@ static void bootSplash(const char* status) {
   M5.Display.setFont(&fonts::FreeMonoBold12pt7b);
   M5.Display.setTextDatum(middle_center);
   M5.Display.setTextColor(0x8e7e);
-  M5.Display.drawString("STAR VOYAGER",cx,cy-52);
+  M5.Display.drawString("voygerM5",cx,cy-52);
   (void)status; // Diagnostics remain on Serial, not on the simplified title screen.
 }
 
@@ -210,6 +215,7 @@ static void drawTutorialPage(){
 }
 static void startFlight(){
  tutorialOpen=false;flightTitleStart=millis();
+ leftTapPending=false;
  prevUs=micros();lastDraw=0;touchLast=false;rightBlockedUntilRelease=true;
  // Commit the first flight pixels directly before the expensive planet/space
  // renderer runs.  A slow first full-screen sprite cannot leave a black LCD.
@@ -217,7 +223,7 @@ static void startFlight(){
  M5.Display.setTextDatum(middle_center);
  M5.Display.setFont(&fonts::FreeMonoBold12pt7b);
  M5.Display.setTextColor(0x8e7e);
- M5.Display.drawString("STAR VOYAGER",physicalW/2,physicalH/2);
+ M5.Display.drawString("voygerM5",physicalW/2,physicalH/2);
  Serial.println("STAR_VOYAGER_R13 FIRST_FLIGHT_FRAME_DIRECT / FLIGHT READY");
 }
 static uint32_t starRandState=26;
@@ -642,7 +648,7 @@ static void drawFadingTitle(){
  float f=1.f-float(elapsed)/TITLE_FADE_MS;
  uint16_t c=rgb((uint8_t)(160.f*f),(uint8_t)(225.f*f),(uint8_t)(252.f*f));
  canvas().setFont(&fonts::FreeMonoBold12pt7b);canvas().setTextDatum(middle_center);
- canvas().setTextColor(c);canvas().drawString("STAR VOYAGER",233,67);
+ canvas().setTextColor(c);canvas().drawString("voygerM5",233,67);
 }
 // M5GFX 0.3.0: S3 PSRAM sprite transfers may remain in flight after pushSprite.
 // Synchronize on the DESTINATION before touching the source sprite, old-frame
@@ -760,9 +766,20 @@ static void controls(double dt){
  sampleButtons();
  const bool rightIsDown=rightHeld();
  if(!rightIsDown)rightBlockedUntilRelease=false;
- if(leftPressed() && !warpActive() && !sim.crashed){
+ const uint32_t clickNow=millis();
+ const bool doubleFromSampler=hardware_buttons::takeLeftDoublePress();
+ const bool leftClick=leftPressed();
+ if(leftTapPending && uint32_t(clickNow-lastLeftTapMs)>450)leftTapPending=false;
+ if((doubleFromSampler ||
+     (leftClick && leftTapPending && uint32_t(clickNow-lastLeftTapMs)<=450)) &&
+    !warpActive() && !sim.crashed){
+    leftTapPending=false;
+    warpMenu=false;sim.thrust=false;sim.engine.clear();touchLast=false;
+    beginWarp(true); // 1.125 light years, straight ahead, no correction.
+ } else if(leftClick && !warpActive() && !sim.crashed){
+    leftTapPending=true;lastLeftTapMs=clickNow;
     warpMenu=!warpMenu;sim.thrust=false;sim.engine.clear();
-    touchLast=false; // Begin the next touch with the new mode's gesture rules.
+    touchLast=false; // A single left click retains the original warp menu.
  }
  const bool rightTap=rightPressed();
  if(rightTap && warpMenu && !warpActive() && !sim.crashed){
