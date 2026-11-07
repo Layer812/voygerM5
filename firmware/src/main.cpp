@@ -31,11 +31,12 @@ static M5Canvas screen(&M5.Display);
 static constexpr int S=466,CTR=233;
 static uint32_t prevUs=0, lastDraw=0, impactMs=0, warpMs=0;
 static bool warpApplied=false;
+static bool longRangeWarpActive=false;
 static warp_timing::FrameClock warpFrameClock;
 static uint8_t lastMotorPower=255;
 static void tickHaptics(uint32_t now) {
  uint8_t power=haptics::output(warpMs?warpFrameClock.elapsedMs:uint32_t(now-warpMs),warpMs!=0,
-                               uint32_t(now-impactMs),impactMs!=0);
+                               uint32_t(now-impactMs),impactMs!=0,longRangeWarpActive);
  if(power!=lastMotorPower){M5.Power.setVibration(power);lastMotorPower=power;}
 }
 static V warpEnd{}, warpArrivalVelocity{};
@@ -110,7 +111,8 @@ static void beginWarp(bool longJump=false){
  warpArrivalYaw=a.yaw;warpArrivalPitch=a.pitch;
  warpArrivalTarget=longJump?0:navIndex;
  warpApplied=false;arrivalGlowMs=0;arrivalFocusUntil=0;
- warpFrameClock.start();
+ longRangeWarpActive=longJump;
+ warpFrameClock.start(longJump?warp_timing::LONG_TOTAL_MS:warp_timing::TOTAL_MS);
  warpMs=millis();sim.thrust=false;sim.engine.clear();
  // Motor is driven by the non-blocking vibration envelope in tickHaptics().
 }
@@ -126,7 +128,7 @@ static void tickWarp(uint32_t now){
    warpApplied=true;
  }
  if(t>=1){
-   warpMs=0;warpApplied=false;
+   warpMs=0;warpApplied=false;longRangeWarpActive=false;
    arrivalGlowMs=now;
    // Only briefly track the object while the warp-exit glow fades.
    arrivalFocusUntil=warpArrivalTarget?now+warp_arrival::ARRIVAL_GLOW_MS:0;
@@ -522,7 +524,9 @@ static void drawWarpFX(){
     }
  }
  canvas().setTextDatum(middle_center);canvas().setFont(&fonts::FreeMonoBold12pt7b);
- canvas().setTextColor(rgb(220,243,255));canvas().drawString(t<.29f?"WARP CHARGING":t<.83f?"WARP TRANSIT":"WARP EXIT",233,172);
+ canvas().setTextColor(rgb(220,243,255));
+ const char* warpPhase=t<.29f?"WARP CHARGING":t<.83f?(longRangeWarpActive?"LONG-RANGE WARP":"WARP TRANSIT"):"WARP EXIT";
+ canvas().drawString(warpPhase,233,172);
 }
 // Warp-exit animation is a short peripheral glow, NOT a target marker.
 // It fades out completely, leaving only the real rendered body or craft.
@@ -964,7 +968,7 @@ void loop(){
  // Engine spool and 1.10s release tail use wall-clock time, independent of warp.
  // The physics integrator consumes engine.acceleration() even after release.
  sim.engine.advance((sim.thrust&&!warpMenu&&!warpActive()&&!sim.crashed)?sim.throttle:0.,dt);
- if(sim.crashed){if(impactMs==0){impactMs=now;warpMs=0;warpApplied=false;warpFrameClock.start();}
+ if(sim.crashed){if(impactMs==0){impactMs=now;warpMs=0;warpApplied=false;longRangeWarpActive=false;warpFrameClock.start();}
    if(now-impactMs>1400){sim.reset();impactMs=0;warpMenu=false;arrivalGlowMs=0;arrivalFocusUntil=0;rightBlockedUntilRelease=true;}}
  else {
    tickWarp(now);
