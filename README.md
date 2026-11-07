@@ -1,4 +1,4 @@
-# voygerM5 — M5Stack StopWatch
+# voygerM5 — Space flight simulator for M5Stack StopWatch
 
 Spaceflight simulator for the M5Stack StopWatch (ESP32-S3). Explore planets, the Moon, and Voyager 1/2 with gravity, thrusters, and warp travel.
 
