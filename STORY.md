@@ -59,4 +59,4 @@ There, alongside a message painted by people on Earth forty years earlier, someo
 
 ---
 
-*This is a fictional science-fiction story. The propulsion and warp technology are imaginary. The vehicle still bears the original “M5” lettering on its hull.*
+*This story is a work of fiction. It is not affiliated with any real people, organizations, products, spacecraft—or extraterrestrials.*
