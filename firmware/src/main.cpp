@@ -321,12 +321,23 @@ static void prepareAtmosphereCircle(){
     atmosphereCircle[i]={int16_t(16384.*cos(a)),int16_t(16384.*sin(a))};
   }
 }
+static uint16_t alienRecolor(uint16_t src){
+ // Reuse Earth's texture, with a distinct blue-green palette.
+ const int r=((src>>11)&31)*2/5;
+ const int g=std::min(63,((src>>5)&63)*6/5+5);
+ const int b=std::min(31,(src&31)*4/5+3);
+ return uint16_t((r<<11)|(g<<5)|b);
+}
 static void bodyDisk(const Projected& p,View cam){
- auto &b=sim.b[p.idx];int x0=p.x,y0=p.y,R=std::min(220,p.r);
- if(R<2){canvas().drawPixel(x0,y0,p.idx==0?0xffa0:0xffff);return;}
- V sunlight=p.idx?astro::unit(sim.b[0].p-b.p):V{0,0,1};
+ const bool alien=p.idx==10;
+ const int texIdx=alien?3:p.idx;
+ const auto &b=alien?sim.alienWorld:sim.b[p.idx];
+ int x0=p.x,y0=p.y,R=std::min(220,p.r);
+ if(R<2){canvas().drawPixel(x0,y0,alien?rgb(48,210,201):(p.idx==0?0xffa0:0xffff));return;}
+ // A nearby fictional star illuminates the alien world, not our distant Sun.
+ V sunlight=alien?astro::unit(V{-0.6,0.3,0.7}):(p.idx?astro::unit(sim.b[0].p-b.p):V{0,0,1});
  double lx=astro::dot(sunlight,cam.r),ly=astro::dot(sunlight,cam.u),lz=astro::dot(sunlight,cam.f);
- const int W=PLANET_TW[p.idx],H=PLANET_TH[p.idx];
+ const int W=PLANET_TW[texIdx],H=PLANET_TH[texIdx];
  const double spin=fmod(sim.jd*.002,1.0);
  const uint16_t spinQ=uint16_t(unsigned(spin*65536.)&65535u);
  V vel=sim.vel();double mu=astro::dot(astro::unit(b.p-sim.ship),astro::unit(vel));
@@ -335,9 +346,9 @@ static void bodyDisk(const Projected& p,View cam){
  // Stellar Doppler tint is reserved for relativistic flight; do not apply a
  // ~6500K stellar spectrum to a textured planet at 30 km/s.
  const bool relativistic=sim.beta()>.01;
- const int red=relativistic?((shifted.rgb565>>11)&31):31;
- const int green=relativistic?((shifted.rgb565>>5)&63):63;
- const int blue=relativistic?(shifted.rgb565&31):31;
+ const int red=alien?31:(relativistic?((shifted.rgb565>>11)&31):31);
+ const int green=alien?63:(relativistic?((shifted.rgb565>>5)&63):63);
+ const int blue=alien?31:(relativistic?(shifted.rgb565&31):31);
  if(sphereLut){
    // Convert the 3D sunlight/camera rotation into one fixed-point light vector
    // per body. No matrix operations, divisions or trig in the inner pixel loop.
@@ -370,8 +381,9 @@ static void bodyDisk(const Projected& p,View cam){
        const fast_sphere::Cell& c=row[xs[sx]];
        if(!fast_sphere::valid(c))continue;
        const int u=fast_sphere::texU(c,spinQ,W),v=fast_sphere::texV(c,H);
-       const uint16_t src=pgm_read_word(PLANET_TEX[p.idx]+v*W+u);
-       const int shade=fast_sphere::diffuseQ8(p.idx,xn[sx],nyQ,lqx,lqy,lqz,c.z);
+       uint16_t src=pgm_read_word(PLANET_TEX[texIdx]+v*W+u);
+       if(alien)src=alienRecolor(src);
+       const int shade=fast_sphere::diffuseQ8(texIdx,xn[sx],nyQ,lqx,lqy,lqz,c.z);
        const uint16_t color=fast_sphere::shade565(src,shade,red,green,blue);
        if(fb)fb[sy*S+sx]=framebufferColor(color);
        else canvas().drawPixel(sx,sy,color);
@@ -389,8 +401,9 @@ static void bodyDisk(const Projected& p,View cam){
      double uv=lon/(2*astro::kPi)+.5+spin;uv-=floor(uv);
      int u=(int)(uv*W),v=(int)((.5-asin(ny)/astro::kPi)*H);
      u=std::max(0,std::min(W-1,u));v=std::max(0,std::min(H-1,v));
-     uint16_t c=pgm_read_word(PLANET_TEX[p.idx]+v*W+u);
-     float diffuse=p.idx==0?1.f:float(std::max(.07,std::min(1.15,.17+.95*(nx*lx+ny*ly-nz*lz))));
+     uint16_t c=pgm_read_word(PLANET_TEX[texIdx]+v*W+u);
+     if(alien)c=alienRecolor(c);
+     float diffuse=texIdx==0?1.f:float(std::max(.07,std::min(1.15,.17+.95*(nx*lx+ny*ly-nz*lz))));
      uint16_t lit=tint(c,diffuse);
      canvas().drawPixel(sx,sy,(uint16_t)((((lit>>11)&31)*red/31)<<11 | (((lit>>5)&63)*green/63)<<5 | ((lit&31)*blue/31)));
     }
@@ -401,7 +414,7 @@ static void bodyDisk(const Projected& p,View cam){
    int x=x0+int(cosf(t)*R*1.7f),y=y0+int(sinf(t)*R*.52f);
    if(x>=0&&x<S&&y>=0&&y<S&&((x-CTR)*(x-CTR)+(y-CTR)*(y-CTR)<204*204))canvas().drawPixel(x,y,col);}
  }
- if(p.idx==3 && R>=9){
+ if((p.idx==3||alien) && R>=9){
    // Atmospheric limb: an extremely thin, sunlight-dependent blue scatter,
    // not two full neon circles around the nightside. Solar-side and backlit
    // pixels can glow; the unilluminated limb fades into the background.
@@ -419,15 +432,16 @@ static void bodyDisk(const Projected& p,View cam){
      const int dx=cx-CTR,dy=cy-CTR;
      if(dx*dx+dy*dy>204*204)continue;
      const float factor=(intensity-.12f)/.88f;
-     const uint16_t color=rgb(uint8_t(4+17*factor),uint8_t(15+75*factor),uint8_t(27+130*factor));
+     const uint16_t color=alien?rgb(uint8_t(2+8*factor),uint8_t(20+120*factor),uint8_t(18+96*factor)):
+                               rgb(uint8_t(4+17*factor),uint8_t(15+75*factor),uint8_t(27+130*factor));
      canvas().drawPixel(cx,cy,color);
    }
  }
 }
 static void drawBodies(View cam){
- Projected visible[10];int n=0;
- for(int i=0;i<10;i++){
-   auto &b=sim.b[i];V q=b.p-sim.ship;double dist=astro::norm(q);if(dist<=b.r)continue;
+ Projected visible[11];int n=0;
+ for(int i=0;i<11;i++){
+   const auto &b=i==10?sim.alienWorld:sim.b[i];V q=b.p-sim.ship;double dist=astro::norm(q);if(dist<=b.r)continue;
    V d=q/dist;if(sim.beta()>.004)d=relativity::aberrate(d,astro::unit(sim.vel()),sim.beta());double z=astro::dot(d,cam.f);if(z<.1)continue;
    double ar=asin(std::min(.9999,b.r/dist));int radius=std::min(220,(int)(380*tan(std::min(1.1,ar))));
    int x=(int)(CTR+380*astro::dot(d,cam.r)/z),y=(int)(CTR-380*astro::dot(d,cam.u)/z);
