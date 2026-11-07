@@ -6,6 +6,8 @@
 namespace astro {
 constexpr double kPi=3.1415926535897932384626;
 constexpr double DEG=kPi/180., AU=149597870700., C=299792458.;
+constexpr double LIGHT_YEAR=C*365.25*86400.;
+constexpr double LONG_WARP_STEP=1.125*LIGHT_YEAR; // four jumps cover 4.5 ly
 struct V { double x=0,y=0,z=0; V()=default; V(double X,double Y,double Z):x(X),y(Y),z(Z){};
 V operator+(V b)const{return{x+b.x,y+b.y,z+b.z};}V operator-(V b)const{return{x-b.x,y-b.y,z-b.z};}
 V operator*(double s)const{return{x*s,y*s,z*s};}V operator/(double s)const{return{x/s,y/s,z/s};}
@@ -55,7 +57,9 @@ struct Sim {
   {"JUPITER",1.26686534e17,69911000.,{}},{"SATURN",3.7931187e16,58232000.,{}},
   {"URANUS",5.793939e15,25362000.,{}},{"NEPTUNE",6.836529e15,24622000.,{}}
  };
+ Body alienWorld{"UNLISTED",3.986004418e14,6371000.,{}}; // hidden story world; not a nav destination
  double jd=JD_START;V ship{},properV{};double yaw=0,pitch=0,throttle=0.; bool thrust=false,crashed=false;
+ int crashBody=-1; double crashRelativeSpeed=0.;
  thrust_control::EngineResponse engine; // real-time power buildup
  StartMode startMode=StartMode::FreeFall;
  void update(){b[0].p={};for(int i=0;i<8;i++)b[i<3?i+1:i+2].p=planet(i,jd);b[4].p=moon(jd,b[3].p);}
@@ -102,6 +106,10 @@ struct Sim {
    properV=earthV;
    if(startMode==StartMode::CircularOrbit)properV+=tangent*sqrt(b[3].GM/r);
    yaw=atan2(e.x,e.z);pitch=asin(e.y);crashed=false;thrust=false;throttle=0.;engine.clear();
+   crashBody=-1;crashRelativeSpeed=0.;
+   // Exactly four 1.125 ly reverse-direction jumps place the craft 30 Mm from the planet.
+   // No orientation correction: a one-degree heading error misses by about 0.079 ly.
+   alienWorld.p=ship-e*(4.*LONG_WARP_STEP+30000000.);
  }
  double altitude(int body=3)const{return norm(ship-b[body].p)-b[body].r;}
  double radialSpeed(int body=3)const{
@@ -112,7 +120,10 @@ struct Sim {
  double earthGravity()const{
    double r=norm(ship-b[3].p);return b[3].GM/(r*r);
  }
- V gravity()const{V a;for(const auto& x:b){V diff=x.p-ship;double r=std::max(norm(diff),x.r*.9);a+=diff*(x.GM/(r*r*r));}return a;}
+ V gravity()const{V a;for(const auto& x:b){V diff=x.p-ship;double r=std::max(norm(diff),x.r*.9);a+=diff*(x.GM/(r*r*r));}
+   // The unlisted planet only affects the flight when the ship reaches its vicinity.
+   const V d=alienWorld.p-ship; if(dot(d,d)<1.e22){double r=std::max(norm(d),alienWorld.r*.9);a+=d*(alienWorld.GM/(r*r*r));}
+   return a;}
  double thrustAccel()const{return engine.acceleration();}
  void step(double dt){
    if(crashed||dt<=0)return;
@@ -129,7 +140,9 @@ struct Sim {
       V aNext=gravity();if(engine.acceleration()!=0.)aNext+=fwd()*thrustAccel();
       properV+=aNext*(h*.5);
       for(int k=0;k<10;k++)if(norm(ship-b[k].p)<b[k].r+(k==3?100000.:0.)){
-         crashed=true;thrust=false;engine.clear();return;
+         crashed=true;crashBody=k;
+         crashRelativeSpeed=norm(vel()-referenceVelocity(k));
+         thrust=false;engine.clear();return;
       }
    }
  }
