@@ -5,11 +5,13 @@
 
 November 2026. An observatory in Hawaii detected an unusual radio signal arriving from the direction of the Magellanic Clouds.
 
-The signal was enormously Doppler-shifted. When analysts reconstructed the time-compressed data, they found a video: the Solar System seen from far away, the Sun a distant point of light surrounded by its planets.
+The signal showed an extreme relativistic Doppler shift. Its frequency was pushed far upward by the blueshift, and when analysts reconstructed the time-compressed data, they found a video: the Solar System seen from far away, the Sun a distant point of light surrounded by its planets.
 
 The view was growing closer.
 
 **Something was coming toward the Solar System.**
+
+![Faint monochrome reconstruction of the Solar System, received as a damaged radio image](sol.png)
 
 ## Development — A Ship from Forty Years Ago
 
@@ -23,7 +25,7 @@ Forty years later, it should have been far beyond the Solar System, near a plane
 
 Its aging, low-power transmitter should not have been able to deliver such clear footage from that distance. More puzzling still, the Doppler shift suggested that the source was approaching the Sun at tremendous speed.
 
-**voygerM5 had never been designed to return.**
+**Yet voygerM5 had never been designed to return.**
 
 ## Turn — An Unexpected Arrival
 
@@ -51,18 +53,9 @@ Researchers around the world studied the enormous reaction rings, the blue-viole
 
 But members of the public noticed something else on the **side of the hull**.
 
-Forty years earlier, people on Earth had painted a message there:
+There, alongside a message painted by people on Earth forty years earlier, someone had left a reply directly on the hull.
 
-> TO ANY INTELLIGENT LIFE  
-> WE ARE FROM PLANET EARTH.  
-> WE COME IN PEACE.  
-> WE HOPE SOMEDAY TO MEET YOU.
-
-Someone had drawn a red underline beneath just two words: **INTELLIGENT LIFE**.
-
-Below the original message was a handwritten reply in red, next to a little doodle of an alien waving three fingers. It had even drawn a heart.
-
-> **ARE YOU SURE YOU HAVE THE RIGHT ADDRESS?**
+![voygerM5 returning to Earth with an alien's handwritten reply on the hull](m5.png)
 
 The first human-made interstellar test vehicle had returned with a propulsion system beyond human understanding—and an unexpectedly modest reply.
 
