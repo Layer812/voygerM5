@@ -755,8 +755,35 @@ static void render(){
  }
  drawWarpFX();
  drawArrivalGlow();
- if(sim.crashed){canvas().fillCircle(233,233,157,0xc002);canvas().setTextColor(0xffff);
-  canvas().drawString("ATMOSPHERIC",233,218);canvas().drawString("ENTRY / IMPACT",233,246);}
+ if(!warpMenu && !warpActive() && !sim.crashed &&
+    astro::norm(sim.ship-sim.alienWorld.p)<100000000.){
+   // Secret destination: no warp-menu entry, no navigational guidance.
+   canvas().fillRoundRect(37,72,392,61,14,rgb(3,29,33));
+   canvas().drawRoundRect(37,72,392,61,14,rgb(70,229,196));
+   canvas().setTextDatum(middle_center);
+   canvas().setFont(&fonts::FreeMonoBold12pt7b);
+   canvas().setTextColor(rgb(193,255,220));
+   canvas().drawString("WRONG ADDRESS!",CTR,102);
+ }
+ if(sim.crashed){
+   canvas().fillCircle(233,233,157,0xc002);
+   canvas().setTextDatum(middle_center);
+   canvas().setFont(&fonts::FreeMonoBold12pt7b);
+   canvas().setTextColor(0xffff);
+   canvas().drawString("ATMOSPHERIC",233,205);
+   canvas().drawString("ENTRY / IMPACT",233,237);
+   // Only Earth impacts reported with c-speed HUD get the relativistic TNT figure.
+   if(sim.crashBody==3 && sim.crashRelativeSpeed>10000000.){
+     const double beta=std::min(0.999999999,sim.crashRelativeSpeed/astro::C);
+     const double energyJ=(1./sqrt(1.-beta*beta)-1.)*SHIP_MASS_KG*astro::C*astro::C;
+     const double teratons=energyJ/4.184e21;
+     char energyText[40];
+     if(teratons>=1.)snprintf(energyText,sizeof(energyText),"%.2f Tt TNT",teratons);
+     else if(teratons>=.001)snprintf(energyText,sizeof(energyText),"%.2f Gt TNT",teratons*1000.);
+     else snprintf(energyText,sizeof(energyText),"%.2f Mt TNT",teratons*1.e6);
+     canvas().drawString(energyText,233,275);
+   }
+ }
  const uint32_t tPaint=micros();
  if(haveSprite) {
    presentSprite();
