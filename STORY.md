@@ -41,7 +41,7 @@ The worn cylindrical hull and the insignia from Earth were still there. But a se
 
 NASA dispatched a probe for a close inspection.
 
-Judging from the staged reactor chambers and their high-energy emissions, scientists suspected an advanced form of antimatter propulsion. Its estimated maximum acceleration was **240,000 m/s²**—enough, at low speeds, to add 240 kilometres per second to the ship's velocity in a single second.
+Judging from the staged reactor chambers and their high-energy emissions, scientists suspected a propulsion system powered by a form of antimatter unknown to humanity. Its estimated maximum acceleration was **240,000 m/s²**—enough, at low speeds, to add 240 kilometres per second to the ship's velocity in a single second.
 
 That was not all. The vessel appeared able to change its position without traversing the space between.
 
