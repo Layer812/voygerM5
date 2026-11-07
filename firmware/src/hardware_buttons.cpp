@@ -8,6 +8,8 @@ namespace {
 struct DebouncedKey {
   std::atomic<bool> held{false};
   std::atomic<unsigned> presses{0};
+  std::atomic<unsigned> doublePresses{0};
+  uint32_t lastPressMs=0;
   bool lastRaw=false, stable=false;
   uint8_t repeated=0;
   void init(bool down) {
@@ -15,6 +17,8 @@ struct DebouncedKey {
     repeated=3;
     held.store(down, std::memory_order_relaxed);
     presses.store(0, std::memory_order_relaxed);
+    doublePresses.store(0, std::memory_order_relaxed);
+    lastPressMs=0;
   }
   void sample(bool down) {
     if(down!=lastRaw){lastRaw=down;repeated=1;}
@@ -22,10 +26,17 @@ struct DebouncedKey {
     if(repeated>=3 && down!=stable) {
       stable=down;
       held.store(down, std::memory_order_release);
-      if(down) presses.fetch_add(1, std::memory_order_release);
+      if(down) {
+        const uint32_t now=millis();
+        if(lastPressMs && now-lastPressMs>=150 && now-lastPressMs<=450)
+          doublePresses.fetch_add(1, std::memory_order_release);
+        lastPressMs=now;
+        presses.fetch_add(1, std::memory_order_release);
+      }
     }
   }
   bool takePress(){return presses.exchange(0, std::memory_order_acq_rel)!=0;}
+  bool takeDoublePress(){return doublePresses.exchange(0, std::memory_order_acq_rel)!=0;}
 };
 DebouncedKey keyA,keyB;
 std::atomic<bool> running{false};
@@ -51,4 +62,5 @@ bool leftDown(){return keyA.held.load(std::memory_order_acquire);}
 bool rightDown(){return keyB.held.load(std::memory_order_acquire);}
 bool takeLeftPress(){return keyA.takePress();}
 bool takeRightPress(){return keyB.takePress();}
+bool takeLeftDoublePress(){return keyA.takeDoublePress();}
 }
