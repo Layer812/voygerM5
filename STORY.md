@@ -19,7 +19,7 @@ NASA identified a code embedded in the transmission.
 
 It belonged to **voygerM5**, the unmanned Interstellar Sublight Test Vehicle launched in 1986.
 
-Built to test a primitive antimatter propulsion system, voygerM5 had been designed to accelerate gently over many years on a one-way voyage toward another star.
+Built to test a primitive antimatter propulsion system, voygerM5 had been designed to accelerate gently over many years on a voyage toward another star.
 
 Forty years later, it should have been far beyond the Solar System, near a planet roughly 4.5 light-years away.
 
