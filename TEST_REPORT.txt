@@ -1,0 +1,22 @@
+PASS fast_sphere: 11549 samples, table=396294 bytes, max(U,V)=(1.5258e-05,1.51856e-05)
+start alt=25000km g=0.405024m/s^2 radial=-2.17954e-06m/s
+freefall time=1800s alt=24339.2km radial=-739.498m/s
+freefall time=3600s alt=22297.2km radial=-1547.89m/s
+freefall time=5400s alt=18661.1km radial=-2536.81m/s
+freefall time=7200s alt=12896km radial=-3995.64m/s
+freefall time=9000s alt=3190.74km radial=-7613.36m/s
+freefall time=9360s alt=97.267km radial=-9891.27m/s
+orbit start radial=-2.72752e-06m/s
+orbit alt after 3h=24999.2km delta=-0.777612km
+PASS gravity fall to Earth, circular orbital comparison
+PASS: haptic pulses and impact priority
+PASS: planets, Moon, start altitude, orbit, warp, Voyager 1/2 positions and propagation
+PASS R15 RGB565 identity and enhanced low-thrust curve
+PASS: relativistic Doppler, aberration, visible-spectrum LUT
+HOST ONLY UV projection 401x401: old 3.728 ms, LUT 0.182 ms, ratio 20.5x (sum=446937052)
+PASS R16F6: 2x thrust, real-time spool, smooth 1.10s tail, continued physics, zero crossing and retro
+PASS R16F7 warp arrival: all 9 bodies plus Voyager 1/2 centered, velocity matched, collision safe, no labels/markers
+PASS: 2x force and complete 1.10s release fade
+PASS warp frame pacing: high/low FPS + reset
+PASS: R16F7 syntax, warp arrival camera/velocity, 2x thrust and 1.10s tail, hardware gates, physics
+R16F8 source candidate; host tests PASS; no Windows PlatformIO or device verification.
