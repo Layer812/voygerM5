@@ -21,6 +21,10 @@ It belonged to **voygerM5**, the unmanned Interstellar Sublight Test Vehicle lau
 
 Built to test a primitive antimatter propulsion system, voygerM5 had been designed to accelerate gently over many years on a voyage toward another star.
 
+The final phase of the experiment called for the spacecraft to strike a planet roughly 4.5 light-years away. Observatories on Earth would watch for the flash and high-energy radiation from the impact, using them to confirm its arrival and estimate its final velocity. That was how the test was supposed to end.
+
+In keeping with the tradition of the Voyager missions, a greeting to any intelligent life had been painted on its hull. But the mission planners had never expected anyone to read it.
+
 Forty years later, it should have been far beyond the Solar System, near a planet roughly 4.5 light-years away.
 
 Its aging, low-power transmitter should not have been able to deliver such clear footage from that distance. More puzzling still, the Doppler shift suggested that the source was approaching the Sun at tremendous speed.
