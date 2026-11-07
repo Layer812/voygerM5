@@ -57,12 +57,6 @@ There, alongside a message painted by people on Earth forty years earlier, someo
 
 ![voygerM5 returning to Earth with an alien's handwritten reply on the hull](m5.png)
 
-The first human-made interstellar test vehicle had returned with a propulsion system beyond human understanding—and an unexpectedly modest reply.
-
-Were the aliens being humble? Was it an insult to humanity? Or did they genuinely believe the message had reached the wrong recipient?
-
-**Nobody knew.**
-
 ---
 
 *This is a fictional science-fiction story. The propulsion and warp technology are imaginary. The vehicle still bears the original “M5” lettering on its hull.*
