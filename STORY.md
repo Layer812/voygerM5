@@ -1,0 +1,75 @@
+# voygerM5 — Interstellar Sublight Test Vehicle
+*— Are You Sure You Have the Right Address? —*
+
+## Beginning — A Signal from the Dark
+
+November 2026. An observatory in Hawaii detected an unusual radio signal arriving from the direction of the Magellanic Clouds.
+
+The signal was enormously Doppler-shifted. When analysts reconstructed the time-compressed data, they found a video: the Solar System seen from far away, the Sun a distant point of light surrounded by its planets.
+
+The view was growing closer.
+
+**Something was coming toward the Solar System.**
+
+## Development — A Ship from Forty Years Ago
+
+NASA identified a code embedded in the transmission.
+
+It belonged to **voygerM5**, the unmanned Interstellar Sublight Test Vehicle launched in 1986.
+
+Built to test a primitive antimatter propulsion system, voygerM5 had been designed to accelerate gently over many years on a one-way voyage toward another star.
+
+Forty years later, it should have been far beyond the Solar System, near a planet roughly 4.5 light-years away.
+
+Its aging, low-power transmitter should not have been able to deliver such clear footage from that distance. More puzzling still, the Doppler shift suggested that the source was approaching the Sun at tremendous speed.
+
+**voygerM5 had never been designed to return.**
+
+## Turn — An Unexpected Arrival
+
+A few months later, an artificial object appeared without warning near the Earth–Moon L1 Lagrange point, between Earth and the Moon.
+
+It was unmistakably voygerM5.
+
+The worn cylindrical hull and the insignia from Earth were still there. But a sequence of immense hollow rings had been fitted to the rear of the spacecraft.
+
+NASA dispatched a probe for a close inspection.
+
+Judging from the staged reactor chambers and their high-energy emissions, scientists suspected an advanced form of antimatter propulsion. Its estimated maximum acceleration was **240,000 m/s²**—enough, at low speeds, to add 240 kilometres per second to the ship's velocity in a single second.
+
+That was not all. The vessel appeared able to change its position without traversing the space between.
+
+Its original Earth-built guidance computer and engine were still present. The extraordinary machinery had simply been attached behind them, as if someone had thoughtfully upgraded an old appliance.
+
+The scientists concentrated on the machinery.
+
+## Ending — The Photograph
+
+NASA released the probe's photographs.
+
+Researchers around the world studied the enormous reaction rings, the blue-violet glow, and the seemingly impossible engineering.
+
+But members of the public noticed something else on the **side of the hull**.
+
+Forty years earlier, people on Earth had painted a message there:
+
+> TO ANY INTELLIGENT LIFE  
+> WE ARE FROM PLANET EARTH.  
+> WE COME IN PEACE.  
+> WE HOPE SOMEDAY TO MEET YOU.
+
+Someone had drawn a red underline beneath just two words: **INTELLIGENT LIFE**.
+
+Below the original message was a handwritten reply in red, next to a little doodle of an alien waving three fingers. It had even drawn a heart.
+
+> **ARE YOU SURE YOU HAVE THE RIGHT ADDRESS?**
+
+The first human-made interstellar test vehicle had returned with a propulsion system beyond human understanding—and an unexpectedly modest reply.
+
+Were the aliens being humble? Was it an insult to humanity? Or did they genuinely believe the message had reached the wrong recipient?
+
+**Nobody knew.**
+
+---
+
+*This is a fictional science-fiction story. The propulsion and warp technology are imaginary. The vehicle still bears the original “M5” lettering on its hull.*
