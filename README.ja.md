@@ -20,3 +20,8 @@ COM16へAPPのみ：`RUN_R16F8_BUILD_FLASH_APP_ONLY_COM16.cmd`
 **R16 FIX8は実機未確認の開発候補**です。ホストテストPASS。R16 FIX4は実機画面表示に成功しています。
 
 [English](README.md) · [開発引継ぎ](HANDOFF.ja.md) · [MIT License](LICENSE)
+
+## Source code / ソース
+
+- [Browse firmware source](firmware/src/main.cpp) / [ワープ表示タイミング](firmware/include/warp_timing.hpp)
+- [Download full R16 FIX8 source archive](source/SV_R16F8_WARP_FX_COM16.zip)
