@@ -8,4 +8,6 @@ bool leftDown();
 bool rightDown();
 bool takeLeftPress();
 bool takeRightPress();
+// Task-level detection survives slow planet-rendering frames.
+bool takeLeftDoublePress();
 }
