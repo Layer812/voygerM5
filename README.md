@@ -2,6 +2,14 @@
 
 Spaceflight simulator for the M5Stack StopWatch (ESP32-S3). Explore planets, the Moon, and Voyager 1/2 with gravity, thrusters, and warp travel.
 
+## Story — The Wrong Address
+
+In November 2026, a mysteriously Doppler-shifted transmission arrived from the direction of the Magellanic Clouds. NASA traced it to **voygerM5**, a one-way interstellar test craft launched forty years earlier. Months later it reappeared near the Moon, fitted with impossible new engines. The answer to humanity's greeting was found not in its telemetry, but painted directly on its hull.
+
+**“ARE YOU SURE YOU HAVE THE RIGHT ADDRESS?”**
+
+[Read the full four-part story (English)](STORY.md) · [日本語版](STORY.ja.md)
+
 ## Controls
 - Swipe center: change ship attitude (RCS).
 - Swipe lower outer rim: throttle (left reverse / 6 o’clock neutral / right forward).
