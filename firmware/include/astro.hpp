@@ -135,14 +135,31 @@ struct Sim {
    for(int j=0;j<count;j++){
       V a=gravity();if(engine.acceleration()!=0.)a+=fwd()*thrustAccel();
       properV+=a*(h*.5);
+      const V beforeMove=ship;
       ship+=vel()*h;
       jd+=h/86400.;update();
       V aNext=gravity();if(engine.acceleration()!=0.)aNext+=fwd()*thrustAccel();
       properV+=aNext*(h*.5);
-      for(int k=0;k<10;k++)if(norm(ship-b[k].p)<b[k].r+(k==3?100000.:0.)){
+      for(int k=0;k<10;k++){
+        const double safeRadius=b[k].r+(k==3?100000.:0.);
+        bool hit=norm(ship-b[k].p)<safeRadius;
+        // Swept segment prevents 0.85c flights from tunneling through Earth.
+        if(!hit && k==3){
+          const V travel=ship-beforeMove, from=beforeMove-b[k].p;
+          const double len2=dot(travel,travel);
+          if(len2>0.){
+            const double t=-dot(from,travel)/len2;
+            if(t>0. && t<1.){
+              const V near=from+travel*t;
+              hit=dot(near,near)<safeRadius*safeRadius;
+            }
+          }
+        }
+        if(hit){
          crashed=true;crashBody=k;
          crashRelativeSpeed=norm(vel()-referenceVelocity(k));
          thrust=false;engine.clear();return;
+        }
       }
    }
  }
