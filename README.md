@@ -18,10 +18,11 @@ In November 2026, a mysteriously Doppler-shifted transmission arrived from the d
 ## Hardware & installation
 - ESP32-S3R8, 16MB Flash, 8MB PSRAM, `BOARD_ID=30`.
 - Paired libraries: M5Unified 0.3.0 / M5GFX 0.3.0.
+- Independent StopWatch startup: `firmware/boards/voygerm5-stopwatch.json` and `firmware/src/main.cpp`; the first LCD frame is drawn directly before PSRAM sprite allocation. No external sample cloning or startup hook.
 - Build: `BUILD_R16F8_NO_FLASH.cmd`; guarded APP-only flash: `RUN_R16F8_BUILD_FLASH_APP_ONLY_COM16.cmd`.
 - **Never flash at generic offset 0x10000**. The guarded CMD checks the real partition table and OTA boot slot, then writes only bootable `ota_0` at `0x20000` on the confirmed device.
 
-**R16 FIX8:** warp animation frame-pacing recovery, arrival positioning, short 1.8-second exit glow, no destination markers or names in flight. Host tests PASS; Windows PlatformIO build and R16 FIX8 device test pending. R16 FIX4 displayed successfully on hardware.
+**Independent startup update:** build and hardware display test still pending. The earlier R16 FIX4 displayed successfully on hardware; the R16 FIX8 flight engine and warp features remain in source.
 
 [日本語](README.ja.md) · [引継ぎメモ](HANDOFF.ja.md) · [License](LICENSE) · [Asset notices](THIRD_PARTY_NOTICES.md)
 
