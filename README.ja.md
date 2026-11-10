@@ -18,12 +18,14 @@ M5Stack StopWatch用の宇宙航行シミュレータです。重力、姿勢制
 ## ビルド・書き込み
 Windows / PlatformIO、ESP32-S3R8、Flash 16MB、PSRAM 8MB。M5Unified/M5GFX 0.3.0、`BOARD_ID=30`。
 
+独立起動方式：`firmware/boards/voygerm5-stopwatch.json` と `firmware/src/main.cpp` を使用します。M5Unified初期化後、PSRAM確保より先にLCDへ初回フレームを直接描画します。外部サンプルのクローンや起動フックは不要です。
+
 ビルドのみ：`BUILD_R16F8_NO_FLASH.cmd`  
 COM16へAPPのみ：`RUN_R16F8_BUILD_FLASH_APP_ONLY_COM16.cmd`
 
 書込CMDはパーティションと起動OTAスロットを読み取り専用で照合します。今回の実機で確認した`ota_0`は`0x20000`です。一般的な`0x10000`へは書き込みません。Bootloader・Partition Table・otadata・NVS・Storageを保護します。
 
-**R16 FIX8は実機未確認の開発候補**です。ホストテストPASS。R16 FIX4は実機画面表示に成功しています。
+**独立起動方式への変更後はビルド・実機とも未確認**です。従来のR16 FIX4では実機画面表示に成功しています。
 
 [English](README.md) · [開発引継ぎ](HANDOFF.ja.md) · [MIT License](LICENSE)
 
