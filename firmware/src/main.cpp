@@ -58,10 +58,10 @@ static button_latch::PressGate leftPressGate,rightPressGate;
 // planet rasterization. M5.update stays exclusively on the Arduino loop core.
 // If task creation fails, fall back to the known-good VinylM5 BtnA/BtnB API.
 static bool leftM5Edge=false,rightM5Edge=false;
-static void sampleButtons() {
-  // VinylM5's known-good input route is always active. Never disable it
-  // merely because the optional raw-GPIO sampling task was created.
-  M5.update();
+static void sampleButtons(bool refreshM5=false) {
+  // M5.update() runs once per Arduino loop. Extra calls during slow rendering
+  // refresh the latched button states only; the core-0 raw GPIO task keeps taps.
+  if(refreshM5)M5.update();
   const uint32_t now=millis();
   leftKey.update(M5.BtnA.isPressed(),now);
   rightKey.update(M5.BtnB.isPressed(),now);
@@ -940,7 +940,7 @@ void setup(){
 }
 void loop(){
  if(!displayReady){delay(500);return;}
- sampleButtons();
+ sampleButtons(true);
  if((int32_t)(millis()-bootSplashUntil)<0){delay(1);return;}
  if(tutorialOpen){
    // No physics or engine while navigating the introductory instructions.
