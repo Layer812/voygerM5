@@ -51,8 +51,7 @@ static bool leftTapPending=false;
 static uint32_t lastLeftTapMs=0;
 static constexpr double SHIP_MASS_KG=65000.;
 // StopWatch physical key A (yellow, GPIO2) and B (blue, GPIO1) are active LOW.
-// Poll raw GPIO in addition to the M5Unified abstraction: PlatformIO's generic
-// esp32s3box board identifier may otherwise leave button updates inactive.
+// Poll raw GPIO alongside M5Unified to retain brief presses during long frames.
 static button_latch::Key leftKey, rightKey;
 static button_latch::PressGate leftPressGate,rightPressGate;
 // Input task on core 0 samples physical keys every 5ms even during expensive
@@ -197,15 +196,17 @@ static int physicalW=466,physicalH=466;
 static uint32_t bootSplashUntil=0;
 static lgfx::LGFXBase* drawTarget=&M5.Display;
 static lgfx::LGFXBase& canvas() { return *drawTarget; }
-static void bootSplash(const char* status) {
+static void bootSplash(){
+  // Independent R13 FIX3 first-frame sequence: draw directly before PSRAM work.
+  // M5Unified owns the AMOLED, PMIC and touch setup. Do not touch their GPIOs.
   if (!displayReady) return;
-  const int cx=physicalW/2, cy=physicalH/2;
-  M5.Display.fillScreen(0x0000);
-  M5.Display.setFont(&fonts::FreeMonoBold12pt7b);
+  M5.Display.fillScreen(TFT_BLACK);
+  M5.Display.fillRect(0,0,physicalW,92,0x2AE5u);
   M5.Display.setTextDatum(middle_center);
-  M5.Display.setTextColor(0x8e7e);
-  M5.Display.drawString("voygerM5",cx,cy-52);
-  (void)status; // Diagnostics remain on Serial, not on the simplified title screen.
+  M5.Display.setFont(&fonts::Font4);
+  M5.Display.setTextSize(1.0f);
+  M5.Display.setTextColor(TFT_WHITE,0x2AE5u);
+  M5.Display.drawString("voygerM5",physicalW/2,66);
 }
 
 static void drawTutorialPage(){
@@ -877,39 +878,39 @@ static void controls(double dt){
  touchLast=down;
 }
 void setup(){
- Serial.begin(115200);
- // StopWatch Vinyl R4 success strategy: M5Unified owns the entire panel,
- // touch and PMIC init. Do not call M5.Display.init() before/after M5.begin.
+ // Dedicated StopWatch board; initialize via M5Unified exactly once.
+ // R13 FIX3 independent startup order, with the project's pinned M5 0.3.0.
  auto cfg=M5.config();
- // Match the physically working StopWatch Vinyl boot path: esp32s3box is
- // merely the compiler board target and is not the actual CO5300 pin map.
- cfg.fallback_board = m5::board_t::board_M5StopWatch;
- // Unused peripherals are not initialized during AMOLED bring-up.
- cfg.internal_mic=false;
- cfg.internal_imu=false;
- cfg.internal_rtc=false;
+ cfg.serial_baudrate=115200;
+ cfg.clear_display=true;
+ cfg.internal_imu=true;
+ cfg.internal_rtc=true;
+ cfg.internal_spk=true;
+ cfg.internal_mic=true;
  cfg.external_imu=false;
  cfg.external_rtc=false;
- cfg.internal_spk=true;  // Match VinylM5 known-good PMIC startup
+ cfg.fallback_board=m5::board_t::board_M5StopWatch;
  M5.begin(cfg);
+ M5.Display.setBrightness(180);
  M5.Display.setRotation(0);
  physicalW=M5.Display.width();
  physicalH=M5.Display.height();
- displayReady=(physicalW>=S && physicalH>=S);
- Serial.printf("STAR_VOYAGER_R16F5 DISPLAY w=%d h=%d board=%d (BOARD_ID=30)\n",physicalW,physicalH,int(M5.getBoard()));
+ displayReady=(M5.getBoard()==m5::board_t::board_M5StopWatch &&
+               physicalW>=S && physicalH>=S);
+ Serial.printf("VOYGERM5_NATIVE_BOOT board=%d display=%dx%d psram=%u flash=%u\n",
+               int(M5.getBoard()),physicalW,physicalH,
+               (unsigned)ESP.getPsramSize(),(unsigned)ESP.getFlashChipSize());
  if(!displayReady){
-   Serial.println("STAR_VOYAGER_R13 DISPLAY_UNAVAILABLE: M5.begin/display detection failed");
-   return;
+   Serial.println("VOYGERM5_NATIVE_BOOT STOP: StopWatch display initialization failed");
+   return; // No drawing to an invalid display.
  }
- // GPIO2=A/left, GPIO1=B/right, active LOW. Do not override the
- // board's GPIO configuration with INPUT_PULLUP; VinylM5 leaves it to M5.begin.
+ bootSplash(); // First visible frame, before expensive graphics allocation.
+ // GPIO2=A/left, GPIO1=B/right, active LOW. M5.begin owns GPIO configuration.
  leftKey.begin(M5.BtnA.isPressed(),millis());
  leftPressGate.reset();rightPressGate.reset();
  rightKey.begin(M5.BtnB.isPressed(),millis());
  const bool samplerOK=hardware_buttons::begin();
- Serial.printf("STAR_VOYAGER_R15 BUTTONS M5_PLUS_GPIO sampler=%s\n",samplerOK?"ON":"M5 FALLBACK");
- M5.Display.setBrightness(175);
- bootSplash("INITIALIZING");
+ Serial.printf("VOYGERM5_NATIVE_BOOT BUTTONS sampler=%s\n",samplerOK?"ON":"M5 FALLBACK");
  Serial.printf("STAR_VOYAGER_R9 PSRAM bytes=%u\n",(unsigned)ESP.getPsramSize());
  // Only allocate the large PSRAM sprite AFTER a visible boot splash.
  screen.setColorDepth(16);
@@ -925,11 +926,9 @@ void setup(){
  drawTarget=haveSprite ? static_cast<lgfx::LGFXBase*>(&screen)
                        : static_cast<lgfx::LGFXBase*>(&M5.Display);
  if(!haveSprite){
-   Serial.println("STAR_VOYAGER_R13 PSRAM SPRITE FAILED: direct display fallback");
-   bootSplash("DIRECT DISPLAY");
+   Serial.println("VOYGERM5_NATIVE_BOOT PSRAM SPRITE FAILED: direct display fallback");
  }else{
-   Serial.println("STAR_VOYAGER_R13 PSRAM SPRITE OK");
-   bootSplash("TUTORIAL");
+   Serial.println("VOYGERM5_NATIVE_BOOT PSRAM SPRITE OK");
  }
  buildSphereLut();
  prepareStars();
