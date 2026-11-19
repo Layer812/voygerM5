@@ -1,10 +1,9 @@
-# Match the *existing* ESP-IDF 5.5.4 partition table reported on COM16.
+# Build layout matching COM16 partition dump (Nov 19 2026): one 3MB ota_0, no ota_1.
 # This file is for BUILD LAYOUT ONLY; it must NEVER be flashed by recovery CMD.
 # Name,    Type, SubType, Offset,   Size,      Flags
 nvs,       data, nvs,     0x9000,   0x4000,
 otadata,   data, ota,     0xD000,   0x2000,
 phy_init,  data, phy,     0xF000,   0x1000,
-ota_0,     app,  ota_0,   0x20000,  0x4F0000,
-ota_1,     app,  ota_1,   0x510000, 0x4F0000,
-storage,   data, 0x81,    0xA00000,0x400000,
+ota_0,     app,  ota_0,   0x20000,  0x300000,
+storage,   data, 0x81,    0x320000,0xAE0000,
 coredump,  data, coredump,0xE00000,0x10000,
