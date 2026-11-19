@@ -23,9 +23,9 @@ Windows / PlatformIO、ESP32-S3R8、Flash 16MB、PSRAM 8MB。M5Unified/M5GFX 0.3
 ビルドのみ：`BUILD_R16F8_NO_FLASH.cmd`  
 COM16へAPPのみ：`RUN_R16F8_BUILD_FLASH_APP_ONLY_COM16.cmd`
 
-書込CMDはパーティションと起動OTAスロットを読み取り専用で照合します。今回の実機で確認した`ota_0`は`0x20000`です。一般的な`0x10000`へは書き込みません。Bootloader・Partition Table・otadata・NVS・Storageを保護します。
+書込CMDは実機のパーティション表とOTA起動情報を読み取り専用で照合します。2026-11-19のCOM16実機では `ota_0=0x20000 / 0x300000`（3MB、`ota_1`なし）、`storage=0x320000` でした。従来の2スロット構成も含め、認識済みの構成と起動先が一致した場合のみAPP-ONLYで更新します。`0x10000`には書き込まず、Bootloader・Partition Table・otadata・NVS・Storageは保護します。
 
-**独立起動方式への変更後はビルド・実機とも未確認**です。従来のR16 FIX4では実機画面表示に成功しています。
+**2026-11-19：独立起動方式でPlatformIOビルド成功（Flash 2,359,413バイト使用）。** 実機書込みは安全チェックによって停止したため、最新構成の画面表示はまだ未確認です。従来のR16 FIX4では実機画面表示に成功しています。
 
 [English](README.md) · [開発引継ぎ](HANDOFF.ja.md) · [MIT License](LICENSE)
 
