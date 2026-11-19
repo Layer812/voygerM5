@@ -27,7 +27,7 @@ APP-ONLY書き込み（COMポートを引数指定）：`RUN_R16F8_BUILD_FLASH_A
 
 書込CMDは実機のパーティション表とOTA起動情報を読み取り専用で照合します。2026-11-19のCOM16実機では `ota_0=0x20000 / 0x300000`（3MB、`ota_1`なし）、`storage=0x320000` でした。別の機体のfactory-only構成（起動APPが1つだけ）もtype/subtype・重複・範囲・既存APPヘッダーを検査して対応します。認識済みのOTA構成では選択中の起動スロットを検証します。`0x10000`はfactory APPとして実機から確認できた場合に限って書込対象となり、オフセットは決め打ちしません。Bootloader・Partition Table・otadata・NVS・Storageは保護します。
 
-[English](README.md) · [開発引継ぎ](HANDOFF.ja.md) · [MIT License](LICENSE)
+[English](README.md) · [MIT License](LICENSE)
 
 ## Source code / ソース
 
