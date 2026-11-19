@@ -25,7 +25,7 @@ COM16へAPPのみ：`RUN_R16F8_BUILD_FLASH_APP_ONLY_COM16.cmd`
 
 書込CMDは実機のパーティション表とOTA起動情報を読み取り専用で照合します。2026-11-19のCOM16実機では `ota_0=0x20000 / 0x300000`（3MB、`ota_1`なし）、`storage=0x320000` でした。従来の2スロット構成も含め、認識済みの構成と起動先が一致した場合のみAPP-ONLYで更新します。`0x10000`には書き込まず、Bootloader・Partition Table・otadata・NVS・Storageは保護します。
 
-**2026-11-19：独立起動方式でPlatformIOビルド成功（Flash 2,359,413バイト使用）。** 実機書込みは安全チェックによって停止したため、最新構成の画面表示はまだ未確認です。従来のR16 FIX4では実機画面表示に成功しています。
+**2026-11-19：実機起動成功（ユーザー報告）。** StopWatch独立起動方式でPlatformIOビルド成功（Flash 2,359,413バイト使用）。実機の単一3MB OTA構成に安全書込みチェックを対応させ、最新voygerM5の起動を確認しました。
 
 [English](README.md) · [開発引継ぎ](HANDOFF.ja.md) · [MIT License](LICENSE)
 
