@@ -6,6 +6,12 @@ Launched from Earth in 1977, Voyager 1 is still travelling into the distant reac
 
 Explore planets, the Moon, and Voyager 1 and 2 in this spaceflight simulator, using gravity, thrusters, and warp travel.
 
+## Install
+
+**[Install voygerM5 with M5Stack WebBurner](https://burner.m5stack.com/PS3FNX)**
+
+Connect an M5Stack StopWatch to your computer via USB and use the public WebBurner page.
+
 ## The voygerM5 Story
 
 In November 2026, a mysteriously Doppler-shifted transmission arrived from the direction of the Magellanic Clouds. NASA traced it to **voygerM5**, an interstellar test craft launched forty years earlier. Months later it reappeared near the Moon, fitted with impossible new engines.
