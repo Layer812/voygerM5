@@ -1,6 +1,8 @@
 # voygerM5 — Space flight simulator for M5Stack StopWatch
 
-M5Stack StopWatch用の宇宙航行シミュレータです。重力、姿勢制御スラスター、ワープで惑星・月・Voyager 1/2を訪れます。
+1977年に地球を旅立ち、今も遠い宇宙を進み続けるボイジャー1号。**voygerM5なら、M5Stack StopWatchの小さな画面の中で、あの探査機にもう一度会いに行けます。**
+
+重力、姿勢制御スラスター、ワープを駆使して、惑星や月、ボイジャー1号・2号を訪ねる宇宙航行シミュレータです。
 
 ## voygerM5の物語
 
@@ -24,8 +26,6 @@ Windows / PlatformIO、ESP32-S3R8、Flash 16MB、PSRAM 8MB。M5Unified/M5GFX 0.3
 APP-ONLY書き込み（COMポートを引数指定）：`RUN_R16F8_BUILD_FLASH_APP_ONLY_COM16.cmd COM13` または `... COM16`。CMD名のCOM16は旧称で、書き込み先COM番号は引数で決まります。
 
 書込CMDは実機のパーティション表とOTA起動情報を読み取り専用で照合します。2026-11-19のCOM16実機では `ota_0=0x20000 / 0x300000`（3MB、`ota_1`なし）、`storage=0x320000` でした。別の機体のfactory-only構成（起動APPが1つだけ）もtype/subtype・重複・範囲・既存APPヘッダーを検査して対応します。認識済みのOTA構成では選択中の起動スロットを検証します。`0x10000`はfactory APPとして実機から確認できた場合に限って書込対象となり、オフセットは決め打ちしません。Bootloader・Partition Table・otadata・NVS・Storageは保護します。
-
-**2026-11-19：実機起動成功（ユーザー報告）。** StopWatch独立起動方式でPlatformIOビルド成功（Flash 2,359,413バイト使用）。実機の単一3MB OTA構成に安全書込みチェックを対応させ、最新voygerM5の起動を確認しました。
 
 [English](README.md) · [開発引継ぎ](HANDOFF.ja.md) · [MIT License](LICENSE)
 
