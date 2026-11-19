@@ -20,9 +20,9 @@ In November 2026, a mysteriously Doppler-shifted transmission arrived from the d
 - Paired libraries: M5Unified 0.3.0 / M5GFX 0.3.0.
 - Independent StopWatch startup: `firmware/boards/voygerm5-stopwatch.json` and `firmware/src/main.cpp`; the first LCD frame is drawn directly before PSRAM sprite allocation. No external sample cloning or startup hook.
 - Build: `BUILD_R16F8_NO_FLASH.cmd`; guarded APP-only flash: `RUN_R16F8_BUILD_FLASH_APP_ONLY_COM16.cmd`.
-- **Never flash at generic offset 0x10000**. The guarded CMD checks the real partition table and OTA boot slot, then writes only bootable `ota_0` at `0x20000` on the confirmed device.
+- **Never flash at generic offset 0x10000**. The guarded CMD reads the actual partition table and OTA boot selection. The COM16 device reported a single 3 MB `ota_0` at `0x20000`, no `ota_1`, and storage starting at `0x320000`. Only a recognized layout with a validated `ota_0` boot target permits an APP-only write; all other partitions remain untouched.
 
-**Independent startup update:** build and hardware display test still pending. The earlier R16 FIX4 displayed successfully on hardware; the R16 FIX8 flight engine and warp features remain in source.
+**Independent startup update:** Windows PlatformIO build succeeded on November 19, 2026 (2,359,413 bytes Flash usage). The old layout check blocked flashing before any changes were made. The revised single-slot flash guard still requires a successful live OTA-data check; the updated app has not yet been flashed or display-tested. The earlier R16 FIX4 displayed successfully on hardware.
 
 [日本語](README.ja.md) · [引継ぎメモ](HANDOFF.ja.md) · [License](LICENSE) · [Asset notices](THIRD_PARTY_NOTICES.md)
 
