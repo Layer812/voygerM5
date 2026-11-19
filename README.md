@@ -1,5 +1,7 @@
 # voygerM5 — Space flight simulator for M5Stack StopWatch
 
+![voygerM5 running on two M5Stack StopWatch devices](docs/images/voygerm5-readme-header.jpg)
+
 Launched from Earth in 1977, Voyager 1 is still travelling into the distant reaches of space. **With voygerM5, you can meet Voyager 1 again—on the tiny screen of an M5Stack StopWatch.**
 
 Explore planets, the Moon, and Voyager 1 and 2 in this spaceflight simulator, using gravity, thrusters, and warp travel.
