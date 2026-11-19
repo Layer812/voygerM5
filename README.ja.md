@@ -1,5 +1,7 @@
 # voygerM5 — Space flight simulator for M5Stack StopWatch
 
+![2台のM5Stack StopWatchで動作するvoygerM5](docs/images/voygerm5-readme-header.jpg)
+
 1977年に地球を旅立ち、今も遠い宇宙を進み続けるボイジャー1号。**voygerM5なら、M5Stack StopWatchの小さな画面の中で、あの探査機にもう一度会いに行けます。**
 
 重力、姿勢制御スラスター、ワープを駆使して、惑星や月、ボイジャー1号・2号を訪ねる宇宙航行シミュレータです。
