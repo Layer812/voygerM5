@@ -19,8 +19,8 @@ In November 2026, a mysteriously Doppler-shifted transmission arrived from the d
 - ESP32-S3R8, 16MB Flash, 8MB PSRAM, `BOARD_ID=30`.
 - Paired libraries: M5Unified 0.3.0 / M5GFX 0.3.0.
 - Independent StopWatch startup: `firmware/boards/voygerm5-stopwatch.json` and `firmware/src/main.cpp`; the first LCD frame is drawn directly before PSRAM sprite allocation. No external sample cloning or startup hook.
-- Build: `BUILD_R16F8_NO_FLASH.cmd`; guarded APP-only flash: `RUN_R16F8_BUILD_FLASH_APP_ONLY_COM16.cmd`.
-- **Never flash at generic offset 0x10000**. The guarded CMD reads the actual partition table and OTA boot selection. The COM16 device reported a single 3 MB `ota_0` at `0x20000`, no `ota_1`, and storage starting at `0x320000`. Only a recognized layout with a validated `ota_0` boot target permits an APP-only write; all other partitions remain untouched.
+- Build: `BUILD_R16F8_NO_FLASH.cmd`; guarded APP-only flash: `RUN_R16F8_BUILD_FLASH_APP_ONLY_COM16.cmd COM13` (or `COM16` for another device). Despite its legacy filename, the script uses the supplied port.
+- **Never assume an APP offset.** The guard reads the device's partition table and verifies the bootable APP, firmware size, and existing ESP32-S3 APP header. It supports one validated factory-only APP or recognized OTA layouts, writes only the current boot APP, and aborts on ambiguity. COM16 was confirmed with a single 3 MB `ota_0` at `0x20000`; a separate factory-only device may have a different target. Bootloader, partition table, OTA data, NVS and storage are never rewritten.
 
 **November 19, 2026 — hardware boot success (user-reported).** Windows PlatformIO build succeeded (2,359,413 bytes Flash usage). After adapting the guarded APP-only procedure to the device's single 3 MB OTA slot, the user confirmed that the updated voygerM5 starts successfully on the StopWatch.
 
