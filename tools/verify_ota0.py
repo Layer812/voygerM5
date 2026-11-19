@@ -157,7 +157,7 @@ def main():
                 raise ValueError('existing selected APP header is absent/invalid')
             if struct.unpack_from('<H',existing,12)[0]!=9:
                 raise ValueError('existing selected APP is not ESP32-S3')
-        Path(args.target_file).write_text('0x%X 0x%X\\n' %
+        Path(args.target_file).write_text('0x%X 0x%X\n' %
                                            (selected[2],selected[3]),encoding='ascii')
     except (OSError,ValueError) as e:
         print('ERROR: Recovery SAFETY CHECK FAILED:',e,file=sys.stderr)
