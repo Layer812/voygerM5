@@ -36,10 +36,36 @@ def validate_table(buf):
         name=label.split(b'\x00')[0].decode('ascii','replace')
         if name in found: raise ValueError('duplicate partition '+name)
         found[name]=(typ,sub,addr,size)
+    # Validate all boundaries even on a whitelisted layout.
+    if len(buf)!=0x1000:
+        raise ValueError('partition table dump must contain exactly 4096 bytes')
+    regions=[]
+    for name,(typ,sub,addr,size) in found.items():
+        if addr<0x9000 or not size or addr+size>0x1000000:
+            raise ValueError('out-of-range partition %s' % name)
+        alignment=0x10000 if typ==0 else 0x1000
+        if addr%alignment or size%0x1000:
+            raise ValueError('misaligned partition %s' % name)
+        if typ==0 and size%0x10000:
+            raise ValueError('app partition size not 64KB aligned: %s' % name)
+        regions.append((addr,addr+size,name))
+    regions.sort()
+    for a,b in zip(regions,regions[1:]):
+        if a[1]>b[0]:
+            raise ValueError('overlapping partitions %s and %s' % (a[2],b[2]))
     for layout, expected in LAYOUTS.items():
         if found == expected:
             return layout, found
-    # Fail closed on unrecognized layouts. Never infer a writable partition from label alone.
+    # R13 FIX3-compatible factory-only mode: dynamically select the sole
+    # type=APP/subtype=FACTORY entry. No OTA slot or OTA-data assumption.
+    app_entries=[(name,part) for name,part in found.items() if part[0]==0]
+    if len(app_entries)==1 and app_entries[0][1][:2]==(0,0):
+        name,app=app_entries[0]
+        if app[2]<0x10000 or app[3]<0x10000:
+            raise ValueError('invalid factory APP range')
+        # No OTA APP means this factory entry is the sole executable slot.
+        return 'FACTORY_ONLY', found
+    # Fail closed on other mixed/unknown OTA layouts or multiple APP slots.
     possibilities=[]
     for layout,expected in LAYOUTS.items():
         diffs=['%s: expected=%s actual=%s' % (name,v,found.get(name))
@@ -99,7 +125,7 @@ def validate_firmware(path, slot_size):
     if chip_id!=9:
         raise ValueError('Wrong ESP chip ID %d (expected ESP32-S3 chip ID 9)' % chip_id)
     if len(blob)>slot_size:
-        raise ValueError('Firmware (%d bytes) exceeds ota_0 size (%d bytes)' % (len(blob), slot_size))
+        raise ValueError('Firmware (%d bytes) exceeds selected APP size (%d bytes)' % (len(blob), slot_size))
     # first-byte magic is only an initial sanity check; bootloader performs full image validation
     return len(blob)
 
@@ -108,20 +134,41 @@ def main():
     ap.add_argument('--dump',required=True)
     ap.add_argument('--otadata',required=True)
     ap.add_argument('--bin',required=True)
+    ap.add_argument('--target-file',required=True)
+    ap.add_argument('--existing-header',help='Read-only dump of the existing APP header for final preflash check')
     args=ap.parse_args()
     try:
         layout, parts=validate_table(Path(args.dump).read_bytes())
-        num_slots=int('ota_0' in parts)+int('ota_1' in parts)
-        boot=validate_boot_target(Path(args.otadata).read_bytes(), num_slots)
-        n=validate_firmware(args.bin, parts['ota_0'][3])
+        if layout=='FACTORY_ONLY':
+            # Partitions were validated and exactly one APP exists.
+            # A factory-only device boots that APP without depending on OTA data.
+            factory=[(name,p) for name,p in parts.items() if p[:2]==(0,0)]
+            name,selected=factory[0]
+            boot='factory (sole APP; no OTA APP entries)'
+        else:
+            num_slots=int('ota_0' in parts)+int('ota_1' in parts)
+            boot=validate_boot_target(Path(args.otadata).read_bytes(), num_slots)
+            name='ota_0'
+            selected=parts[name]
+        n=validate_firmware(args.bin, selected[3])
+        if args.existing_header:
+            existing=Path(args.existing_header).read_bytes()
+            if len(existing)<24 or existing[0]!=0xE9:
+                raise ValueError('existing selected APP header is absent/invalid')
+            if struct.unpack_from('<H',existing,12)[0]!=9:
+                raise ValueError('existing selected APP is not ESP32-S3')
+        Path(args.target_file).write_text('0x%X 0x%X\\n' %
+                                           (selected[2],selected[3]),encoding='ascii')
     except (OSError,ValueError) as e:
         print('ERROR: Recovery SAFETY CHECK FAILED:',e,file=sys.stderr)
         return 2
-    print('PASS: actual partition table matches whitelisted %s (%d partitions).' % (layout,len(parts)))
-    print('PASS: next boot target is',boot)
-    print('PASS: ESP32-S3 image header and size: %d bytes <= %d.' % (n,parts['ota_0'][3]))
-    print('Authorized APP-ONLY destination: ota_0 at 0x%X, size 0x%X. No other region.' %
-          (parts['ota_0'][2],parts['ota_0'][3]))
+    print('PASS: validated partition layout %s (%d partitions).' % (layout,len(parts)))
+    print('PASS: selected boot APP:',boot)
+    print('PASS: ESP32-S3 image header and size: %d bytes <= %d.' % (n,selected[3]))
+    if args.existing_header:
+        print('PASS: existing APP header is an ESP32-S3 image.')
+    print('Authorized APP-ONLY target: %s at 0x%X, size 0x%X.' %
+          (name,selected[2],selected[3]))
     return 0
 
 if __name__=='__main__': sys.exit(main())
