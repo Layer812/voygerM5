@@ -24,7 +24,7 @@ In November 2026, a mysteriously Doppler-shifted transmission arrived from the d
 - Build: `BUILD_R16F8_NO_FLASH.cmd`; guarded APP-only flash: `RUN_R16F8_BUILD_FLASH_APP_ONLY_COM16.cmd COM13` (or `COM16` for another device). Despite its legacy filename, the script uses the supplied port.
 - **Never assume an APP offset.** The guard reads the device's partition table and verifies the bootable APP, firmware size, and existing ESP32-S3 APP header. It supports one validated factory-only APP or recognized OTA layouts, writes only the current boot APP, and aborts on ambiguity. COM16 was confirmed with a single 3 MB `ota_0` at `0x20000`; a separate factory-only device may have a different target. Bootloader, partition table, OTA data, NVS and storage are never rewritten.
 
-[日本語](README.ja.md) · [引継ぎメモ](HANDOFF.ja.md) · [License](LICENSE) · [Asset notices](THIRD_PARTY_NOTICES.md)
+[日本語](README.ja.md) · [License](LICENSE) · [Asset notices](THIRD_PARTY_NOTICES.md)
 
 ## Source code / ソース
 
